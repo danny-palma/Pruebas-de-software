@@ -7,10 +7,16 @@ export async function init() {
     const mongoUrl = `mongodb+srv://${process.env.MongoDB_User}:${process.env.MongoDB_Password}@cluster0.hfpgxap.mongodb.net/books?retryWrites=true&w=majority&appName=Cluster0`;
     await mongoose.connect(mongoUrl);
   } catch (error) {
-    console.error('Error while conecting to database mongo DB: \n\n' + error);
+    console.error("Error while conecting to database mongo DB: \n\n" + error);
     process.exit(1);
   }
 }
+
+/**
+ * Initializes a connection to a MongoDB database using Mongoose.
+ * 
+ * @throws {Error} If an error occurs during the connection.
+ */
 
 const BookSchema = new Schema<BookDocument>({
   title: { type: String, required: true },
