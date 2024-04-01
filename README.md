@@ -33,7 +33,8 @@ npm install -y
 ```
 
 ## 5. Configuración
-- Antes de ejecutar el proyecto toca generar el archivo .env en donde se almacena la configuracion del entorno, SOLICITAR USUARIO Y CONTRASEÑA PARA PODER ACCEDER A LA BASE DE DATOS 
+- Antes de ejecutar el proyecto toca generar el archivo .env en donde se almacena la configuracion del entorno, SOLICITAR USUARIO Y CONTRASEÑA PARA PODER ACCEDER A LA BASE DE DATOS
+- Se puede usar el archivo que esta escrito con .env-example ya cambiarle las variables 
 
 ## 6. Ejecución del proyecto
 - Para poder ejecutar el proyecto es necesario haber realizado todos los anteriores pasos correctamente. 
@@ -41,19 +42,43 @@ npm install -y
 ```sh
 npm start 
 ```
+- Un ejemplo de que el servidor inicio correctamente es: 
+```sh
+~$ npm start 
 
-## 7. Pruebas
-- Instrucciones para ejecutar pruebas automatizadas.
-- Pasos para realizar pruebas manuales.
+> pruebas-de-software@1.0.0 prestart
+> npm run build
 
-## 8. Solución de problemas
-- Lista de problemas comunes y soluciones.
 
-## 9. Contribuciones
-- Información sobre cómo contribuir al proyecto.
+> pruebas-de-software@1.0.0 build
+> tsc
 
-## 10. Contacto
-- Detalles de contacto del equipo de desarrollo.
 
-## 11. Notas finales
-- Cualquier otra información relevante.
+> pruebas-de-software@1.0.0 start
+> node dist/index.js
+
+Library node-cache loaded!
+Loading app...
+Loading mongoose...
+ok
+Loading express...
+ok
+Finished...
+Loading controllers...
+Finished...
+Server listening in port: 3000
+```
+
+## 7. Solución de problemas
+- Puede suceder incompatibilidades con respecto a las versiones del software, porfavor verificar bien las versiones instaladas
+- Puede suceder que el puerto este ocupado por otra aplicacion corriendo en el equipo local, porfavor verificar cambiar el puerto en el archivo .env
+- Puede suceder que el archivo .env no este o este mal nombrado o la configuracion dentro del archivo no sea la correcta, por favor verificar el archivo que este correctamente configurado como se muestra en el paso #5
+
+## 8. Contribuciones
+- Crear un fork al proyecto con github, posteriormente luego de realizar los cambios en una rama ajena a la rama principal, se realiza un pullrequest al respositorio en github 
+
+## 9. Contacto
+- [Daniel Alejandro Palma Garcia](mailto:daniela.palmag@ecci.edu.co)
+- [Juan David Cifuentes Guasca](mailto:juanda.cifuentesgu@ecci.edu.co)
+- [Sebastián David venegas ayala](mailto:sebastiand.venegasa@ecci.edu.co)
+- [Jhon Jairo Benabides Suarez](jhonj.benabidess@ecci.edu.co)
