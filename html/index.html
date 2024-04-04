@@ -1,10 +1,138 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pruebas de software</title>
-</head>
-<body>
-    <h1>Pruebas de software</h1>
-</body>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <h1 class="pb-2 mb-4 border-bottom border-primay">Pruebas de software</h1>
+    <div class="container">
+      <div class="row">
+        <div class="shadow-sm col-6 rounded border border">
+          <h5 class="pb-2 mb-4 border-bottom border-primay">
+            Busqueda de libros
+          </h5>
+          <div class="mb-3">
+            <label for="input_id" class="form-label">ID</label>
+            <input
+              type="text"
+              class="form-control"
+              id="input_id"
+              placeholder="example: 65ff6614d5b30106c864df1c"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="input_title" class="form-label">Titulo</label>
+            <input
+              type="text"
+              class="form-control"
+              id="input_title"
+              placeholder="example: El viaje intergaláctico"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="input_sinopsis" class="form-label">Sinopsis</label>
+            <input
+              type="text"
+              class="form-control"
+              id="input_sinopsis"
+              placeholder="example: En un futuro distante, la humanidad"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="input_imgurl" class="form-label">Imagen URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="input_imgurl"
+              placeholder="example: https://example.com/image3.jpg"
+            />
+          </div>
+          <button type="button" class="btn btn-primary mb-3" id="btn_search">
+            Buscar
+          </button>
+        </div>
+        <div class="shadow-sm col rounded border" >
+            <div class="container">
+                <div class="row row-cols-3" id="bookListContainer"></div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    var BtnBuscar = document.getElementById("btn_search");
+    BtnBuscar.onclick = (ev) => {
+      const id = document.getElementById("input_id").value;
+      const title = document.getElementById("input_title").value;
+      const sinopsis = document.getElementById("input_sinopsis").value;
+      const imgurl = document.getElementById("input_imgurl").value;
+
+      const queryParams = new URLSearchParams({
+        id: id,
+        title: title,
+        sinopsis: sinopsis,
+        imgurl: imgurl,
+      });
+
+      const url = "/searchbook?" + queryParams;
+
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error en la petición.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          displayBooks(data);
+        })
+        .catch((error) => {
+          displayErrorAlert("Hubo un problema con la petición Fetch: " + error);
+        });
+    };
+
+    function displayBooks(books) {
+      const bookListContainer = document.getElementById("bookListContainer");
+      bookListContainer.innerHTML = "";
+
+      books.forEach((book) => {
+        const card = `
+            <div class="col mb-3">
+                <div class="card">
+                    <img src="${book.imgurl}" class="card-img-top" alt="${book.imgurl}">
+                    <div class="card-body">
+                        <h5 class="card-title">${book.title}</h5>
+                        <p class="card-text">${book.sinopsis}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        bookListContainer.innerHTML += card;
+      });
+    }
+
+    function displayErrorAlert(message) {
+      const alertContainer = document.getElementById("alertContainer");
+      alertContainer.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    }
+  </script>
 </html>
