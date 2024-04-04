@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
+import path from "path";
 
 export async function controller(req: Request, res: Response) {
   try {
-    res.sendFile('../../../html/index.html');
+    res.sendFile(path.resolve("../../../html/index.html"));
   } catch (Error) {
     console.error("Error while getting index.html" + Error)
   }
