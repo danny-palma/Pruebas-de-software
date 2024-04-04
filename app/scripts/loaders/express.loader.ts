@@ -8,7 +8,7 @@ export function init() {
    * @throws {Error} If there is an error while loading Express.
    */
   try {
-    const port = process.env.DEFAULT_PORT;
+    const port = process.env.DEFAULT_PORT || process.env.PORT;
     app.use(bodyParser.json());
 
     // Start server
