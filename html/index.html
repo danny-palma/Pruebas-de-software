@@ -10,11 +10,11 @@
       crossorigin="anonymous"
     />
   </head>
-  <body>
+  <body class="px-2">
     <h1 class="pb-2 mb-4 border-bottom border-primay">Pruebas de software</h1>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="shadow-sm col-6 rounded border border">
+        <div class="shadow-sm col-6 rounded border border pt-2">
           <h5 class="pb-2 mb-4 border-bottom border-primay">
             Busqueda de libros
           </h5>
@@ -58,19 +58,15 @@
             Buscar
           </button>
         </div>
-        <div class="shadow-sm col rounded border" >
+        <div class="shadow-sm col rounded border pt-2" >
             <div class="container">
-                <div class="row row-cols-3" id="bookListContainer"></div>
+                <div class="row row-cols-3 overflow-y-auto" style="max-height: 47em;" id="bookListContainer"></div>
             </div>
         </div>
       </div>
+      <div id="alertContainer"></div>
     </div>
   </body>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"
-  ></script>
   <script>
     var BtnBuscar = document.getElementById("btn_search");
     BtnBuscar.onclick = (ev) => {
@@ -85,13 +81,16 @@
         sinopsis: sinopsis,
         imgurl: imgurl,
       });
-
+      if (!id && !title && !sinopsis && !imgurl) {
+        displayErrorAlert("Debes ingresar al menos un parametro de busqueda!")
+        return;
+      }
       const url = "/searchbook?" + queryParams;
 
       fetch(url)
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Error en la petición.");
+            throw new Error();
           }
           return response.json();
         })
@@ -99,7 +98,7 @@
           displayBooks(data);
         })
         .catch((error) => {
-          displayErrorAlert("Hubo un problema con la petición Fetch: " + error);
+          displayErrorAlert("Hubo un problema con la petición vuelve a intentarlo mas tarde.");
         });
     };
 
@@ -114,7 +113,11 @@
                     <img src="${book.imgurl}" class="card-img-top" alt="${book.imgurl}">
                     <div class="card-body">
                         <h5 class="card-title">${book.title}</h5>
-                        <p class="card-text">${book.sinopsis}</p>
+                        <p class="card-text">
+                            ${book.sinopsis}
+                            <hr>
+                            ID: ${book._id}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -126,13 +129,16 @@
     function displayErrorAlert(message) {
       const alertContainer = document.getElementById("alertContainer");
       alertContainer.innerHTML = `
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="mt-4 alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Error:</strong> ${message}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     `;
     }
   </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
 </html>
