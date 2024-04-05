@@ -73,57 +73,66 @@
     </div>
   </body>
   <script>
+    var lock = false;
     var BtnBuscar = document.getElementById("btn_search");
     BtnBuscar.onclick = (ev) => {
-      const id = document.getElementById("input_id").value;
-      const title = document.getElementById("input_title").value;
-      const sinopsis = document.getElementById("input_sinopsis").value;
-      const imgurl = document.getElementById("input_imgurl").value;
+      if (lock == true) return console.log("blocked!");
+      lock = true;
+      const a = () => {
+        const id = document.getElementById("input_id").value;
+        const title = document.getElementById("input_title").value;
+        const sinopsis = document.getElementById("input_sinopsis").value;
+        const imgurl = document.getElementById("input_imgurl").value;
 
-      const queryParams = new URLSearchParams({
-        _id: id,
-        title: title,
-        sinopsis: sinopsis,
-        imgurl: imgurl,
-      });
-      if (!id && !title && !sinopsis && !imgurl) {
-        displayErrorAlert("Debes ingresar al menos un parametro de busqueda!");
-        return;
-      }
-      const url = "/searchbook?" + queryParams;
-      var initfetchtime = Date.now();
-      loading();
-      fetch(url)
-        .then((response) => {
-          if (!response.ok) {
-            response.json().then((data) => {
-              console.error(data);
-              if (data.message == "Invalid provided id") {
-                displayErrorAlert("Ingresa un ID correcto");
-                return;
-              }
-            });
-            throw new Error();
-          }
-          response.json().then((data) => {
-            var endfetchtime = Date.now();
-            var initdrawtime = Date.now();
-            displayBooks(data);
-            var enddrawtime = Date.now();
-            displayTimes(
-              initfetchtime,
-              endfetchtime,
-              initdrawtime,
-              enddrawtime
-            );
-          });
-        })
-        .catch((error) => {
-          displayWarningAlert(
-            "Hubo un problema con la petición vuelve a intentarlo mas tarde."
-          );
-          document.getElementById("bookListContainer").innerHTML = "";
+        const queryParams = new URLSearchParams({
+          _id: id,
+          title: title,
+          sinopsis: sinopsis,
+          imgurl: imgurl,
         });
+        if (!id && !title && !sinopsis && !imgurl) {
+          displayErrorAlert(
+            "Debes ingresar al menos un parametro de busqueda!"
+          );
+          return;
+        }
+        const url = "/searchbook?" + queryParams;
+        var initfetchtime = Date.now();
+        loading();
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              response.json().then((data) => {
+                console.error(data);
+                if (data.message == "Invalid provided id") {
+                  displayErrorAlert("Ingresa un ID correcto");
+                  return;
+                }
+              });
+              throw new Error();
+            }
+            response.json().then((data) => {
+              var endfetchtime = Date.now();
+              var initdrawtime = Date.now();
+              displayBooks(data);
+              var enddrawtime = Date.now();
+              displayTimes(
+                initfetchtime,
+                endfetchtime,
+                initdrawtime,
+                enddrawtime
+              );
+            });
+          })
+          .catch((error) => {
+            displayWarningAlert(
+              "Hubo un problema con la petición vuelve a intentarlo mas tarde."
+            );
+            document.getElementById("bookListContainer").innerHTML = "";
+          });
+      };
+      a();
+      lock = false;
     };
 
     function displayBooks(books) {
@@ -136,7 +145,7 @@
         const card = `
             <div class="col mb-3">
                 <div class="card">
-                    <img src="${book.imgurl}" class="card-img-top" alt="${book.imgurl}">
+                    <img src="" class="card-img-top" alt="${book.imgurl}">
                     <div class="card-body">
                         <h5 class="card-title">${book.title}</h5>
                         <p class="card-text">
