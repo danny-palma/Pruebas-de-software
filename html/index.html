@@ -14,7 +14,7 @@
     <h1 class="pb-2 mb-4 border-bottom border-primay">Pruebas de software</h1>
     <div class="container-fluid">
       <div class="row">
-        <div class="shadow-sm col-6 rounded border border pt-2">
+        <div class="shadow-sm col-6 rounded border border pt-2 mx-1">
           <h5 class="pb-2 mb-4 border-bottom border-primay">
             Busqueda de libros
           </h5>
@@ -58,13 +58,18 @@
             Buscar
           </button>
         </div>
-        <div class="shadow-sm col rounded border pt-2" >
-            <div class="container">
-                <div class="row row-cols-3 overflow-y-auto" style="max-height: 47em;" id="bookListContainer"></div>
-            </div>
+        <div class="shadow-sm col rounded border pt-2">
+          <div class="container">
+            <div class="d-block text-end my-2" id="times-display"></div>
+            <div
+              class="row row-cols-3 overflow-y-auto"
+              style="max-height: 47em"
+              id="bookListContainer"
+            ></div>
+          </div>
         </div>
       </div>
-      <div id="alertContainer"></div>
+      <div id="alertContainer" class="position-absolute top-0 end-0 p-3"></div>
     </div>
   </body>
   <script>
@@ -76,36 +81,57 @@
       const imgurl = document.getElementById("input_imgurl").value;
 
       const queryParams = new URLSearchParams({
-        id: id,
+        _id: id,
         title: title,
         sinopsis: sinopsis,
         imgurl: imgurl,
       });
       if (!id && !title && !sinopsis && !imgurl) {
-        displayErrorAlert("Debes ingresar al menos un parametro de busqueda!")
+        displayErrorAlert("Debes ingresar al menos un parametro de busqueda!");
         return;
       }
       const url = "/searchbook?" + queryParams;
-
+      var initfetchtime = Date.now();
+      loading();
       fetch(url)
         .then((response) => {
           if (!response.ok) {
+            response.json().then((data) => {
+              console.error(data);
+              if (data.message == "Invalid provided id") {
+                displayErrorAlert("Ingresa un ID correcto");
+                return;
+              }
+            });
             throw new Error();
           }
-          return response.json();
-        })
-        .then((data) => {
-          displayBooks(data);
+          response.json().then((data) => {
+            var endfetchtime = Date.now();
+            var initdrawtime = Date.now();
+            displayBooks(data);
+            var enddrawtime = Date.now();
+            displayTimes(
+              initfetchtime,
+              endfetchtime,
+              initdrawtime,
+              enddrawtime
+            );
+          });
         })
         .catch((error) => {
-          displayErrorAlert("Hubo un problema con la petición vuelve a intentarlo mas tarde.");
+          displayWarningAlert(
+            "Hubo un problema con la petición vuelve a intentarlo mas tarde."
+          );
+          document.getElementById("bookListContainer").innerHTML = "";
         });
     };
 
     function displayBooks(books) {
       const bookListContainer = document.getElementById("bookListContainer");
       bookListContainer.innerHTML = "";
-
+      if (!books.length) {
+        bookListContainer.innerHTML = "<h4>No se encontraron libros</h4>";
+      }
       books.forEach((book) => {
         const card = `
             <div class="col mb-3">
@@ -128,12 +154,61 @@
 
     function displayErrorAlert(message) {
       const alertContainer = document.getElementById("alertContainer");
-      alertContainer.innerHTML = `
+      alertContainer.innerHTML += `
         <div class="mt-4 alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Error:</strong> ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     `;
+    }
+    function displayWarningAlert(message) {
+      const alertContainer = document.getElementById("alertContainer");
+      alertContainer.innerHTML += `
+        <div class="mt-4 alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Alerta:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    }
+    function clearAlerts() {
+      const alertContainer = document.getElementById("alertContainer");
+      alertContainer.innerHTML = "";
+    }
+    function displayTimes(
+      initfetchtime,
+      endfetchtime,
+      initdrawtime,
+      enddrawtime
+    ) {
+      var msfetch = endfetchtime - initfetchtime;
+      var msdraw = enddrawtime - initdrawtime;
+      var timesdisplay = document.getElementById("times-display");
+
+      timesdisplay.innerText = `Tiempo para obtener los datos: ${msfetch} ms. \n Tiempo para dibujar los datos: ${msdraw} ms.`;
+    }
+    function loading() {
+      const bookListContainer = document.getElementById("bookListContainer");
+      bookListContainer.innerHTML = `
+        <div class="spinner"></div>
+
+        <style>
+            .spinner {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 9px solid;
+            border-color: #dbdcef;
+            border-right-color: #474bff;
+            animation: spinner-d3wgkg 1s infinite linear;
+        }
+
+        @keyframes spinner-d3wgkg {
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        </style>
+        `;
     }
   </script>
   <script

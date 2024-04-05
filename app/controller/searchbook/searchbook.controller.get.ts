@@ -37,11 +37,11 @@ export async function controller(req: Request, res: Response) {
   try {
     let { title, sinopsis, _id, imgurl } = req.query;
     if (!_id && !sinopsis && !title && !imgurl) {
-      res.status(400).json({ status: 400, message: "Malformed body request" });
+      res.status(400).json({ status: 400, message: "Missing search parameters" });
       return;
     }
     if (_id && !isValidObjectId(_id)) {
-      res.status(400).json({ status: 400, message: "Malformed body request" });
+      res.status(400).json({ status: 400, message: "Invalid provided id" });
       return;
     }
     // Limit the length of the search parameters
