@@ -46,7 +46,7 @@ export async function controller(req: Request, res: Response) {
       res.status(400).json({ status: 400, message: "Invalid provided id" });
       return;
     }
-    if ((title?.length as number) >= 255) {
+    if ((title?.length as number) > 255) {
       res
         .status(400)
         .json({
@@ -55,21 +55,21 @@ export async function controller(req: Request, res: Response) {
         });
       return;
     }
-    if ((sinopsis?.length as number) >= 255) {
+    if ((sinopsis?.length as number) > 255) {
       res.status(400).json({
         status: 400,
         message: "The parameter sinopsis exceeds the limit 255 characters",
       });
       return;
     }
-    if ((imgurl?.length as number) >= 255) {
+    if ((imgurl?.length as number) > 255) {
       res.status(400).json({
         status: 400,
         message: "The parameter imgurl exceeds the limit 255 characters",
       });
       return;
     }
-    if ((_id?.length as number) >= 255) {
+    if ((_id?.length as number) > 255) {
       res.status(400).json({
         status: 400,
         message: "The parameter _id exceeds the limit 255 characters",
