@@ -25,6 +25,7 @@
               class="form-control"
               id="input_id"
               placeholder="example: 65ff6614d5b30106c864df1c"
+              maxlength="255"
             />
           </div>
           <div class="mb-3">
@@ -34,6 +35,7 @@
               class="form-control"
               id="input_title"
               placeholder="example: El viaje intergaláctico"
+              maxlength="255"
             />
           </div>
           <div class="mb-3">
@@ -43,6 +45,7 @@
               class="form-control"
               id="input_sinopsis"
               placeholder="example: En un futuro distante, la humanidad"
+              maxlength="255"
             />
           </div>
           <div class="mb-3">
@@ -52,6 +55,7 @@
               class="form-control"
               id="input_imgurl"
               placeholder="example: https://example.com/image3.jpg"
+              maxlength="255"
             />
           </div>
           <button type="button" class="btn btn-primary mb-3" id="btn_search">
@@ -73,66 +77,63 @@
     </div>
   </body>
   <script>
-    var lock = false;
     var BtnBuscar = document.getElementById("btn_search");
     BtnBuscar.onclick = (ev) => {
-      if (lock == true) return console.log("blocked!");
-      lock = true;
-      const a = () => {
-        const id = document.getElementById("input_id").value;
-        const title = document.getElementById("input_title").value;
-        const sinopsis = document.getElementById("input_sinopsis").value;
-        const imgurl = document.getElementById("input_imgurl").value;
+      BtnBuscar.classList.add("disabled");
+      const id = document.getElementById("input_id").value;
+      const title = document.getElementById("input_title").value;
+      const sinopsis = document.getElementById("input_sinopsis").value;
+      const imgurl = document.getElementById("input_imgurl").value;
 
-        const queryParams = new URLSearchParams({
-          _id: id,
-          title: title,
-          sinopsis: sinopsis,
-          imgurl: imgurl,
-        });
-        if (!id && !title && !sinopsis && !imgurl) {
-          displayErrorAlert(
-            "Debes ingresar al menos un parametro de busqueda!"
-          );
-          return;
-        }
-        const url = "/searchbook?" + queryParams;
-        var initfetchtime = Date.now();
-        loading();
-        fetch(url)
-          .then((response) => {
-            if (!response.ok) {
-              response.json().then((data) => {
-                console.error(data);
-                if (data.message == "Invalid provided id") {
-                  displayErrorAlert("Ingresa un ID correcto");
-                  return;
-                }
-              });
-              throw new Error();
-            }
+      const queryParams = new URLSearchParams({
+        _id: id,
+        title: title,
+        sinopsis: sinopsis,
+        imgurl: imgurl,
+      });
+      if (!id && !title && !sinopsis && !imgurl) {
+        displayErrorAlert("Debes ingresar al menos un parametro de busqueda!");
+        BtnBuscar.classList.remove("disabled");
+        return;
+      }
+      const url = "/searchbook?" + queryParams;
+      var initfetchtime = Date.now();
+      loading();
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
             response.json().then((data) => {
-              var endfetchtime = Date.now();
-              var initdrawtime = Date.now();
-              displayBooks(data);
-              var enddrawtime = Date.now();
-              displayTimes(
-                initfetchtime,
-                endfetchtime,
-                initdrawtime,
-                enddrawtime
-              );
+              console.error(data);
+              if (data.message == "Invalid provided id") {
+                displayErrorAlert("Ingresa un ID correcto");
+                return;
+              }
+              displayErrorAlert(data.message);
+              BtnBuscar.classList.remove("disabled");
             });
-          })
-          .catch((error) => {
-            displayWarningAlert(
-              "Hubo un problema con la petición vuelve a intentarlo mas tarde."
+            throw new Error();
+          }
+          response.json().then((data) => {
+            var endfetchtime = Date.now();
+            var initdrawtime = Date.now();
+            displayBooks(data);
+            var enddrawtime = Date.now();
+            displayTimes(
+              initfetchtime,
+              endfetchtime,
+              initdrawtime,
+              enddrawtime
             );
-            document.getElementById("bookListContainer").innerHTML = "";
+            BtnBuscar.classList.remove("disabled");
           });
-      };
-      a();
-      lock = false;
+        })
+        .catch((error) => {
+          displayWarningAlert(
+            "Hubo un problema con la petición vuelve a intentarlo mas tarde."
+          );
+          document.getElementById("bookListContainer").innerHTML = "";
+          BtnBuscar.classList.remove("disabled");
+        });
     };
 
     function displayBooks(books) {

@@ -5,17 +5,17 @@ import { isValidObjectId } from "mongoose";
 
 /**
  * Handles an HTTP request to retrieve books based on search parameters.
- * 
+ *
  * @param req - The HTTP request object containing the query parameters.
  * @param res - The HTTP response object used to send the response.
  * @returns The search results as a JSON array in the response body.
  * @throws 400 Bad Request if the request is malformed.
  * @throws 500 Internal Server Error if there is an internal server error.
- * 
+ *
  * @example
  * // Request:
  * // GET /books?title=Harry%20Potter&sinopsis=magic
- * 
+ *
  * // Response:
  * // Status: 200 OK
  * // Body: [
@@ -37,11 +37,43 @@ export async function controller(req: Request, res: Response) {
   try {
     let { title, sinopsis, _id, imgurl } = req.query;
     if (!_id && !sinopsis && !title && !imgurl) {
-      res.status(400).json({ status: 400, message: "Missing search parameters" });
+      res
+        .status(400)
+        .json({ status: 400, message: "Missing search parameters" });
       return;
     }
     if (_id && !isValidObjectId(_id)) {
       res.status(400).json({ status: 400, message: "Invalid provided id" });
+      return;
+    }
+    if ((title?.length as number) >= 255) {
+      res
+        .status(400)
+        .json({
+          status: 400,
+          message: "The parameter title exceeds the limit 255 characters",
+        });
+      return;
+    }
+    if ((sinopsis?.length as number) >= 255) {
+      res.status(400).json({
+        status: 400,
+        message: "The parameter sinopsis exceeds the limit 255 characters",
+      });
+      return;
+    }
+    if ((imgurl?.length as number) >= 255) {
+      res.status(400).json({
+        status: 400,
+        message: "The parameter imgurl exceeds the limit 255 characters",
+      });
+      return;
+    }
+    if ((_id?.length as number) >= 255) {
+      res.status(400).json({
+        status: 400,
+        message: "The parameter _id exceeds the limit 255 characters",
+      });
       return;
     }
     // Limit the length of the search parameters
